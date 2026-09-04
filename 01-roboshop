@@ -3,40 +3,78 @@
 AMI_ID=ami-0220d79f3f480ecf5
 ZONE_ID=Z04820742MSQA0TX8Y2UC
 DOMAIN_NAME=daws-90s.shop
+#!/bin/bash
 
-for instance in $@
+# Define variables
+AMI_ID="ami-0220d79f3f480ecf5"
+ZONE_ID="Z04820742MSQA0TX8Y2UC"
+DOMAIN_NAME="daws-90s.shop"
 
+for instance in "$@"
 do
+  echo "================================"
+  echo "Launching instance: $instance"
+  echo "================================"
 
-  echo "Launching instance :$instance"
-
-   INSTANCE_ID =$( aws ec2 run-instances \        ## WE can execute then create instance id
-    --image-id ami-0220d79f3f480ecf5 \
+  # Launch instance
+  INSTANCE_ID=$(aws ec2 run-instances \
+    --image-id $AMI_ID \
     --instance-type t3.micro \
     --security-group-ids roboshop-common \
-    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=roboshop-$,instance id}]" \
+    --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=roboshop-$instance}]" \
     --query "Instances[0].InstanceId" \
-    --output text
-   )
+    --output text)
 
-echo "Instance ID: $INSTANCE_ID"
+  echo "Instance ID: $INSTANCE_ID"
+  echo "Waiting for instance to boot..."
+  sleep 15
 
-if [ "$instance" == "frontend" ]; then
+  # Get IP based on instance type
+  if [ "$instance" == "frontend" ]; then
     IP=$(aws ec2 describe-instances \
         --instance-ids $INSTANCE_ID \
         --query "Reservations[0].Instances[0].PublicIpAddress" \
         --output text)
     
     R53_RECORD="$instance.$DOMAIN_NAME"
+    RECORD_TYPE="A"
     echo "Using PUBLIC IP for frontend"
-else
+  else
     IP=$(aws ec2 describe-instances \
         --instance-ids $INSTANCE_ID \
         --query "Reservations[0].Instances[0].PrivateIpAddress" \
         --output text)
     
     R53_RECORD="$instance.$DOMAIN_NAME"
+    RECORD_TYPE="A"
     echo "Using PRIVATE IP for backend"
-fi
+  fi
+
+  echo "=============================================="
+  echo "Instance: $instance"
+  echo "Instance ID: $INSTANCE_ID"
+  echo "IP Address: $IP"
+  echo "R53 Record: $R53_RECORD"
+  echo "=============================================="
+
+  # Create Route53 change batch JSON
+ 
+{
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "$R53_RECORD",
+        "Type": "A",
+        "TTL": 1,
+        "ResourceRecords": [
+          {
+            "Value": "$IP"
+          }
+        ]
+      }
+    }
+  ]
+  
 
  
