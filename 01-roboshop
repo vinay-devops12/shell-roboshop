@@ -19,25 +19,24 @@ do
     --output text
    )
 
-echo " instance ID:$INSTANCE_ID"
- 
- if [ "$ instance" == "frontend" ]; then
+echo "Instance ID: $INSTANCE_ID"
+
+if [ "$instance" == "frontend" ]; then
     IP=$(aws ec2 describe-instances \
-    --instance-ids i-0fb364ec8ab45a775 \
-    --query "Reservations[0].Instances[0].PublicIpAddress" \
-    --output text
-
-   R53_RECORD="$instance.$DOMAIN_NAME"
-)
- else
- IP[]=$(aws ec2 describe-instances \
-    --instance-ids i-0fb364ec8ab45a775 \
-    --query "Reservations[0].Instances[0].PrivateIpAddress" \
-    --output text
-
-     R53_RECORD="$instance.$DOMAIN_NAME"
- )
-   
- fi
+        --instance-ids $INSTANCE_ID \
+        --query "Reservations[0].Instances[0].PublicIpAddress" \
+        --output text)
+    
+    R53_RECORD="$instance.$DOMAIN_NAME"
+    echo "Using PUBLIC IP for frontend"
+else
+    IP=$(aws ec2 describe-instances \
+        --instance-ids $INSTANCE_ID \
+        --query "Reservations[0].Instances[0].PrivateIpAddress" \
+        --output text)
+    
+    R53_RECORD="$instance.$DOMAIN_NAME"
+    echo "Using PRIVATE IP for backend"
+fi
 
  
