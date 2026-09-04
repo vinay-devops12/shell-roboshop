@@ -25,5 +25,10 @@ fi
 ## second ard-- exit code
 
 
-
-
+VALIDATE (){
+    if [ $1 -ne o ]
+     echo -e"$TIMESTAMP [ERROR] $2 ... $R FIALURE... $N" | tee -a $LOGS_FILE
+       exit 1
+       else
+       echo -e "INFORM IT  when $2...$G SUCCESS $Y"
+}
