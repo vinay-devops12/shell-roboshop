@@ -64,17 +64,17 @@ do
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
-        "Name": "$R53_RECORD",
+        "Name": "DOMAIN_PLACEHOLDER",
         "Type": "A",
-        "TTL": 1,
+        "TTL": 300,
         "ResourceRecords": [
           {
-            "Value": "$IP"
+            "Value": "IP_PLACEHOLDER"
           }
         ]
       }
     }
   ]
-  
+}
 
  
