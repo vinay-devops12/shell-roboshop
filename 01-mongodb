@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LOGS-FOLDER="/var/log/roboshop"
+LOGS_FOLDER="/var/log/roboshop"
 sudo mkdir -p $LOGS_FOLDER
-sudo chown -R ec2-user:ec2-user$LOGS_FOLDER
+sudo chown -R ec2-user:ec2-user $LOGS_FOLDER
 sudo chmod -R 755 $LOGS_FOLDER
 LOGS_FILE="$LOGS_FOLDER/$0.log"
 TIMESTAMP=$(date "+%Y-%m-%d-%H:%M:%S")
@@ -13,14 +13,14 @@ Y="\e[33m"
 N="\e[0m"
 
 
-USER_ID=$(id-u)
-if [$USERID -ne o]
+USER_ID=$(id -u)
+if [$USER_ID -ne 0]; then
  echo -e "$TIMESTAMP [ERROR] $R YOU SHOULD BE RUN AS ROOT USER $N" | tee -a $LOGS_FILE
   exit 1
 
 fi
-
-
+   echo "$TIMESTAMP [info] $G you should br run with  root access $Y" |  tee -a $LOGS_FILE
+ 
 ## fir arg -- what you are install
 ## second ard-- exit code
 
