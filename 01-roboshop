@@ -59,7 +59,7 @@ do
 
   # Create Route53 change batch JSON
  
-{
+
   "Changes": [
     {
       "Action": "UPSERT",
@@ -75,6 +75,6 @@ do
       }
     }
   ]
-}
+
 
  
